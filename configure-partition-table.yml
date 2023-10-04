@@ -26,7 +26,7 @@
     when: ansible_devices_sdb is defined
     
   - name: Create /var/lib/pgsql
-    community.general.lvol:: 
+    community.general.lvol: 
       name: var_lib_pgsql
       vg: Satellite_PRD
       size: 20G
@@ -67,4 +67,3 @@
 
   - name: Mount fstab
     ansible.builtin.shell: mount -a
-    
