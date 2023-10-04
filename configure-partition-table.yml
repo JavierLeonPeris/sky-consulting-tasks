@@ -1,0 +1,66 @@
+---
+
+- name: Configure partition table for Sky servers
+  hosts: localhost
+  become: true
+  #vars:
+  tasks:
+  - name: Extend the logical volume by given space
+    community.general.lvol:
+      vg: VolGroup00
+      lv: varLV
+      size: 15.9G
+      resizefs: true
+
+  - name: Create new phisical partition
+    community.general.parted: 
+      device: /dev/sdb
+      number: 1
+      state: present
+
+  - name: Create Satellite_PRD volume group
+    community.general.lvg: 
+      name: Satellite_PRD
+      pvs: /dev/sdb
+      state: present
+    when: ansible_devices_sdb is defined
+    
+  - name: Create /var/lib/pgsql
+    community.general.lvol:: 
+      name: var_lib_pgsql
+      vg: Satellite_PRD
+      size: 20G
+
+  - name: Create folder for /var/lib/pgsql
+    ansible.builtin.file:
+      path: /var/lib/pgsql
+      owner: postgres
+      group: postgres
+      mode: '0775'
+      state: directory
+
+  - name: Ensure /var/lib/pgsql is in fstab
+    ansible.builtin.lineinfile:
+      path: /etc/fstab
+      regexp: '*var_lib_pgsql'
+      line: "/dev/mapper/Satellite_PRD-var_lib_pgsql /var/lib/pgsql             xfs     defaults           1 2"
+
+  - name: Create /var/lib/pulp
+    community.general.lvol:: 
+      name: var_lib_pulp
+      vg: Satellite_PRD
+      size: 1.5T
+
+  - name: Create folder for /var/lib/pulp
+    ansible.builtin.file:
+      path: /var/lib/pulp
+      owner: pulp
+      group: pulp
+      mode: '0775'
+      state: directory
+
+  - name: Ensure /var/lib/pulp is in fstab
+    ansible.builtin.lineinfile:
+      path: /etc/fstab
+      regexp: '*var_lib_pulp'
+      line: "/dev/mapper/Satellite_PRD-var_lib_pulp /var/lib/pulp              xfs     defaults           1 2"
