@@ -12,7 +12,7 @@
       size: 15.9G
       resizefs: true
 
-  - name: Create new phisical partition
+  - name: Create new physical partition
     community.general.parted: 
       device: /dev/sdb
       number: 1
