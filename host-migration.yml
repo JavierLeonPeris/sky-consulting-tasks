@@ -5,13 +5,18 @@
   tasks:
     - name: Unregister from old Satellite
       ansible.builtin.shell: subscription-manager unregister
+      ignore_errors: true
 
     - name: Clean subscription data
-      ansible.builtin.shell: subscription-manager Clean
+      ansible.builtin.shell: subscription-manager clean
 
     - name: Flush cache
       ansible.builtin.shell: rm -rf /var/cache/yum
 
-    - name: Register to the new Satellite
-      ansible.builtin.shell: |
-        curl -sS --insecure 'https://up004580.bskyb.com/register?activation_keys=RHEL8-autopatched' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo0LCJpYXQiOjE2OTY4MzkyNDcsImp0aSI6IjYzYmQ3OWUzZDIxMmIxNTJjNDVkOWY0NTgzNTgzMWRmMTE5ZWYzY2YxZjAzZTY1NmRjM2E2NjAzMWJiZTRjZGUiLCJleHAiOjE2OTY4NTM2NDcsInNjb3BlIjoicmVnaXN0cmF0aW9uI2dsb2JhbCByZWdpc3RyYXRpb24jaG9zdCJ9.CPvva6lnWSQcHms9HSUKat2yWnnSUOeVhWsUVkL6cL4' | bash
+    - name: Download Satellite certificate
+      ansible.builtin.shell:
+        wget -P ~ http://up004580.bskyb.com/pub/katello-server-ca.crt
+
+    - name: Register the host
+      ansible.builtin.shell:
+        subscription-manager register --org "Sky" --activationkey "RHEL8-autopatched"
