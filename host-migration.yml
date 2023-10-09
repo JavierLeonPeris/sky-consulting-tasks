@@ -17,6 +17,11 @@
       ansible.builtin.shell:
         wget -P ~ http://up004580.bskyb.com/pub/katello-server-ca.crt
 
+    - name: Download katello-customer rpm
+      ansible.builtin.shell:
+        yum -y install --nogpgcheck http://up004580.bskyb.com/pub/katello-ca-consumer-latest.noarch.rpm
+
     - name: Register the host
       ansible.builtin.shell:
         subscription-manager register --org "Sky" --activationkey "RHEL8-autopatched"
+        
