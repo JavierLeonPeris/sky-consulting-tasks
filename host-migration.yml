@@ -14,8 +14,10 @@
       ansible.builtin.shell: rm -rf /var/cache/yum
 
     - name: Download Satellite certificate
-      ansible.builtin.shell:
+      ansible.builtin.shell: |
         wget -P ~ http://up004580.bskyb.com/pub/katello-server-ca.crt
+        wget -P ~ http://up004581.bskyb.com/pub/katello-server-ca.crt
+        wget -P ~ http://up004582.bskyb.com/pub/katello-server-ca.crt
 
     - name: Remove katello old package
       ansible.builtin.shell:
@@ -23,9 +25,9 @@
 
     - name: Download katello-customer rpm
       ansible.builtin.shell:
-        yum -y install --nogpgcheck http://up004580.bskyb.com/pub/katello-ca-consumer-latest.noarch.rpm
+        yum -y install --nogpgcheck http://satellite.bskyb.com/pub/katello-ca-consumer-latest.noarch.rpm
 
     - name: Register the host
       ansible.builtin.shell:
-        subscription-manager register --org "Sky" --activationkey "RHEL8-autopatched"
+        subscription-manager register --org "Sky" --activationkey "{{ sky_ak }}"
         
