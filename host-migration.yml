@@ -15,7 +15,6 @@
 
     - name: Download Satellite certificate
       ansible.builtin.shell: |
-        wget -P ~ http://up004580.bskyb.com/pub/katello-server-ca.crt
         wget -P ~ http://up004581.bskyb.com/pub/katello-server-ca.crt
         wget -P ~ http://up004582.bskyb.com/pub/katello-server-ca.crt
 
@@ -28,6 +27,10 @@
         yum -y install --nogpgcheck http://satellite.bskyb.com/pub/katello-ca-consumer-latest.noarch.rpm
 
     - name: Register the host
-      ansible.builtin.shell:
-        subscription-manager register --org "Sky" --activationkey "{{ sky_ak }}"
-        
+      ansible.builtin.shell: |
+        subscription-manager register \
+        --activationkey=""{{ sky_ak }}"" \
+        --baseurl=https://satellite.bskyb.com/pulp/content/ \
+        --org="Sky" \
+        --serverurl=https://satellite.bskyb.com/rhsm
+
