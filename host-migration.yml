@@ -12,6 +12,11 @@
 
     - name: Flush cache
       ansible.builtin.shell: rm -rf /var/cache/yum
+      when: ansible_distribution_major_version == '7'
+
+    - name: Flush cache
+      ansible.builtin.shell: rm -rf /var/cache/dnf
+      when: ansible_distribution_major_version == '8'
 
     - name: Download Satellite certificate
       ansible.builtin.shell: |
